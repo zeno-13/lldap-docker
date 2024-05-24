@@ -23,9 +23,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Create networks
-      run: docker network create -d bridge proxy
-
     - name: Start docker containers
       run: docker compose --env-file ./tests/lldap.env up --wait --wait-timeout 120 --detach
 
