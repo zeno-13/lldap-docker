@@ -1,10 +1,5 @@
 version: '3'
 
-networks:
-  proxy:
-    driver: bridge
-    external: true
-
 secrets:
   JWT_SECRET:
     file: ${DIR}/secrets/JWT_SECRET
@@ -16,9 +11,9 @@ services:
     image: lldap/lldap:stable
     ports:
       # For LDAP, not recommended to expose, see Usage section.
-      #- 3890:3890
+      - 3890:3890
       # For LDAPS (LDAP Over SSL), enable port if LLDAP_LDAPS_OPTIONS__ENABLED set true, look env below
-      #- 6360:6360
+      # - 6360:6360
       # For the web front-end
       - 17170:17170
     volumes:
@@ -42,5 +37,3 @@ services:
       # u can also set a different database:
       # LLDAP_DATABASE_URL: mysql://mysql-user:password@mysql-server/my-database
       # LLDAP_DATABASE_URL: postgres://postgres-user:password@postgres-server/my-database
-    networks:
-      - proxy
