@@ -1,0 +1,46 @@
+version: '3'
+
+networks:
+  proxy:
+    driver: bridge
+    external: true
+
+secrets:
+  JWT_SECRET:
+    file: ${DIR}/secrets/JWT_SECRET
+  KEY_SEED:
+    file: ${DIR}/secrets/KEY_SEED
+
+services:
+  lldap:
+    image: lldap/lldap:stable
+    ports:
+      # For LDAP, not recommended to expose, see Usage section.
+      #- 3890:3890
+      # For LDAPS (LDAP Over SSL), enable port if LLDAP_LDAPS_OPTIONS__ENABLED set true, look env below
+      #- 6360:6360
+      # For the web front-end
+      - 17170:17170
+    volumes:
+      # - lldap/data:/data
+      # Alternatively, you can mount a local folder
+      - ${DIR}/data:/data
+    secrets: 
+      - JWT_SECRET
+      - KEY_SEED
+    environment:
+      # UID: 1000
+      # GID: 1000
+      TZ: America/New_York
+      LLDAP_JWT_SECRET_FILE: /run/secrets/JWT_SECRET
+      LLDAP_KEY_SEED_FILE: /run/secrets/KEY_SEED
+      # LLDAP_LDAP_BASE_DN: dc=example,dc=com
+      # If using LDAPS, set enabled true and configure cert and key path
+      # LLDAP_LDAPS_OPTIONS__ENABLED: true
+      # LLDAP_LDAPS_OPTIONS__CERT_FILE: /path/to/certfile.crt
+      # LLDAP_LDAPS_OPTIONS__KEY_FILE: /path/to/keyfile.key
+      # u can also set a different database:
+      # LLDAP_DATABASE_URL: mysql://mysql-user:password@mysql-server/my-database
+      # LLDAP_DATABASE_URL: postgres://postgres-user:password@postgres-server/my-database
+    networks:
+      - proxy

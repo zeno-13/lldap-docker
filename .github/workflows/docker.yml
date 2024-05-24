@@ -1,0 +1,41 @@
+name: Deploy Container
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Create networks
+      run: docker network create -d bridge proxy
+
+    - name: Start docker containers
+      run: docker compose --env-file ./tests/lldap.env up --wait --wait-timeout 120 --detach
+
+    - name: Show containers
+      run: docker container ps
+
+    - name: Networks
+      run: docker network ls
+
+    - name: Curl lldap
+      run: |
+        curl 0.0.0.0:17170 | sudo tee curl_lldap_result
+        sudo cat curl_lldap_result
